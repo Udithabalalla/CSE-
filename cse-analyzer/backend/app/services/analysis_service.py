@@ -1,11 +1,12 @@
 import time
 from datetime import datetime, timezone
 from typing import List, Dict, Any
-from app.database import get_db
+# Import `get_db` lazily inside functions to avoid importing motor at module import time
 from app.engines import statistics_engine
 
 
 async def _fetch_symbol_data(symbol: str, start: str, end: str) -> List[dict]:
+    from app.database import get_db
     db = get_db()
     cursor = db.market_data.find(
         {"symbol": symbol, "date": {"$gte": start, "$lte": end}},
@@ -96,6 +97,7 @@ async def run_analysis(
         "warnings": warnings,
         "created_at": datetime.now(timezone.utc),
     }
+    from app.database import get_db
     db = get_db()
     await db.analysis_results.insert_one(result_doc)
 
@@ -109,6 +111,7 @@ async def run_analysis(
 
 
 async def _fetch_benchmark(start: str, end: str) -> List[dict]:
+    from app.database import get_db
     db = get_db()
     cursor = db.index_data.find(
         {"date": {"$gte": start, "$lte": end}},
@@ -136,6 +139,7 @@ def _generate_recommendations(analysis_type: str, data: dict) -> List[str]:
 
 
 async def get_analysis_history(user_id: str, limit: int = 20) -> List[dict]:
+    from app.database import get_db
     db = get_db()
     cursor = db.analysis_results.find(
         {"user_id": user_id}, {"_id": 0}

@@ -7,6 +7,8 @@ import DashboardPage from "./pages/DashboardPage";
 import UploadPage from "./pages/UploadPage";
 import AnalysisPage from "./pages/AnalysisPage";
 import PredictionsPage from "./pages/PredictionsPage";
+import MarketOverviewPage from "./pages/MarketOverviewPage";
+import StockDetailPage from "./pages/StockDetailPage";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 5 * 60 * 1000, retry: 1 } },
@@ -62,6 +64,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <AppLayout><PredictionsPage /></AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stocks"
+            element={
+              <ProtectedRoute>
+                <AppLayout><MarketOverviewPage /></AppLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/stocks/:symbol"
+            element={
+              <ProtectedRoute>
+                <AppLayout><StockDetailPage /></AppLayout>
               </ProtectedRoute>
             }
           />

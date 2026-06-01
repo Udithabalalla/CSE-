@@ -5,7 +5,7 @@ from passlib.context import CryptContext
 from fastapi import HTTPException, status
 from bson import ObjectId
 from app.config import settings
-from app.database import get_db
+# Import `get_db` lazily inside functions to avoid importing motor at module import time
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -25,6 +25,7 @@ def create_token(user_id: str, username: str) -> str:
 
 
 async def register_user(username: str, email: str, password: str, full_name: Optional[str]):
+    from app.database import get_db
     db = get_db()
     if await db.users.find_one({"username": username}):
         raise HTTPException(status_code=400, detail="Username already taken")
@@ -45,6 +46,7 @@ async def register_user(username: str, email: str, password: str, full_name: Opt
 
 
 async def login_user(username: str, password: str):
+    from app.database import get_db
     db = get_db()
     user = await db.users.find_one({"username": username})
     if not user or not verify_password(password, user["password_hash"]):

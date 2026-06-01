@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend,
-  ResponsiveContainer, ScatterChart, Scatter, Cell,
+  ResponsiveContainer,
 } from "recharts";
 import { getStocks } from "../api/data";
 import { runAnalysis } from "../api/analysis";

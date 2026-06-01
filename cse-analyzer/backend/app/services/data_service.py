@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import List, Tuple
 from fastapi import UploadFile, HTTPException
 from pymongo import UpdateOne
-from app.database import get_db
+# Import `get_db` lazily inside functions to avoid importing motor at module import time
 
 REQUIRED_COLUMNS = {
     "stocks": ["symbol", "date", "open", "high", "low", "close", "volume"],
@@ -54,6 +54,7 @@ async def process_upload(file: UploadFile, data_type: str, uploaded_by: str):
 
 
 async def _bulk_upsert(df: pd.DataFrame, collection: str, data_type: str, uploaded_by: str):
+    from app.database import get_db
     db = get_db()
     operations = []
     errors = []
@@ -114,6 +115,7 @@ def _build_filter(row, data_type: str) -> dict:
 
 
 async def get_symbols():
+    from app.database import get_db
     db = get_db()
     pipeline = [
         {"$group": {
@@ -139,6 +141,7 @@ async def get_symbols():
 
 
 async def get_dashboard_summary(user_id: str):
+    from app.database import get_db
     db = get_db()
     total_stocks = await db.market_data.distinct("symbol")
     total_records = await db.market_data.count_documents({})

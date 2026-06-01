@@ -1,15 +1,24 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from app.database import connect_db, close_db
-from app.routers import auth, data, analysis, predictions
+from app.routers import auth, data, analysis, predictions, scraper
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await connect_db()
+    # Import DB connect/close lazily and continue if DB packages are missing
+    try:
+        from app.database import connect_db, close_db
+        await connect_db()
+    except Exception:
+        connect_db = None
+        close_db = None
     yield
-    await close_db()
+    try:
+        if close_db:
+            await close_db()
+    except Exception:
+        pass
 
 
 app = FastAPI(title="CSE Market Analyzer", version="1.0.0", lifespan=lifespan)
@@ -26,6 +35,7 @@ app.include_router(auth.router)
 app.include_router(data.router)
 app.include_router(analysis.router)
 app.include_router(predictions.router)
+app.include_router(scraper.router)
 
 
 @app.get("/health")

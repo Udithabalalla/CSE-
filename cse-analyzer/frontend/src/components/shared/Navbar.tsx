@@ -3,9 +3,10 @@ import { useAuthStore } from "../../store/authStore";
 
 const links = [
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/upload", label: "Upload" },
+  { to: "/stocks", label: "Stocks" },
   { to: "/analysis", label: "Analysis" },
   { to: "/predictions", label: "Predictions" },
+  { to: "/upload", label: "Upload" },
 ];
 
 export default function Navbar() {

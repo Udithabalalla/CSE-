@@ -98,3 +98,51 @@ export interface PredictionRecord {
   model_used: string;
   created_at: string;
 }
+
+export interface OHLCVRow {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  turnover?: number;
+  market_cap?: number;
+  pct_change?: number;
+  trade_count?: number;
+}
+
+export interface StockStats {
+  current_price: number;
+  prev_close: number | null;
+  pct_change: number | null;
+  high_52w: number;
+  low_52w: number;
+  market_cap: number | null;
+  volume: number | null;
+  turnover: number | null;
+  total_return_pct: number;
+}
+
+export interface StockDetail {
+  symbol: string;
+  name: string;
+  sector: string;
+  stats: StockStats;
+  ohlcv: OHLCVRow[];
+}
+
+export interface MarketOverviewRow {
+  symbol: string;
+  name: string;
+  sector: string;
+  close: number;
+  open: number;
+  high: number;
+  low: number;
+  volume: number;
+  turnover: number;
+  market_cap: number;
+  pct_change: number;
+  change: number;
+}

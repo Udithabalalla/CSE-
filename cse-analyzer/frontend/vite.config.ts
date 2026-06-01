@@ -10,6 +10,7 @@ export default defineConfig({
       "/data": "http://localhost:8000",
       "/analysis": "http://localhost:8000",
       "/predictions": "http://localhost:8000",
+      "/scraper": "http://localhost:8000",
     },
   },
 });

@@ -2,7 +2,6 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from app.config import settings
-from app.database import get_db
 
 bearer_scheme = HTTPBearer()
 

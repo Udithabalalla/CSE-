@@ -1,5 +1,17 @@
+import math
 from fastapi import HTTPException
 from datetime import date, timedelta
+
+
+def _clean(v):
+    """Replace NaN/Inf floats with None so JSON serialization doesn't crash."""
+    if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+        return None
+    return v
+
+
+def _clean_doc(doc: dict) -> dict:
+    return {k: _clean(v) for k, v in doc.items()}
 
 
 async def get_stock_detail(symbol: str, days: int = 365):
@@ -13,7 +25,7 @@ async def get_stock_detail(symbol: str, days: int = 365):
          "turnover": 1, "market_cap": 1, "pct_change": 1, "trade_count": 1},
     ).sort("date", 1)
 
-    rows = await cursor.to_list(None)
+    rows = [_clean_doc(r) for r in await cursor.to_list(None)]
     if not rows:
         raise HTTPException(404, f"No data found for symbol {symbol}")
 
@@ -49,6 +61,36 @@ async def get_stock_detail(symbol: str, days: int = 365):
     }
 
 
+async def get_aspi_history(days: int = 365):
+    """Return ASPI index from index_data collection, fallback to synthetic from market_data."""
+    from app.database import get_db
+    db = get_db()
+    cutoff = (date.today() - timedelta(days=days)).isoformat()
+
+    # Try dedicated index_data collection first
+    rows = await db.index_data.find(
+        {"symbol": "ASPI", "date": {"$gte": cutoff}},
+        {"_id": 0, "date": 1, "close": 1, "open": 1, "high": 1, "low": 1, "volume": 1},
+    ).sort("date", 1).to_list(None)
+
+    if rows:
+        return rows
+
+    # Fallback: synthesize ASPI from sum of market_cap by date
+    pipeline = [
+        {"$match": {"date": {"$gte": cutoff}, "market_cap": {"$gt": 0}}},
+        {"$group": {
+            "_id":    "$date",
+            "value":  {"$sum": "$market_cap"},
+            "volume": {"$sum": "$volume"},
+        }},
+        {"$sort": {"_id": 1}},
+        {"$project": {"_id": 0, "date": "$_id", "close": "$value", "open": "$value",
+                       "high": "$value", "low": "$value", "volume": "$volume"}},
+    ]
+    return await db.market_data.aggregate(pipeline).to_list(None)
+
+
 async def get_stocks_market_overview():
     """All stocks with latest-day snapshot for the market overview table."""
     from app.database import get_db
@@ -67,4 +109,5 @@ async def get_stocks_market_overview():
          "pct_change": 1, "change": 1, "prev_close": 1},
     ).sort("symbol", 1)
 
-    return await cursor.to_list(None)
+    raw = await cursor.to_list(None)
+    return [_clean_doc(r) for r in raw]

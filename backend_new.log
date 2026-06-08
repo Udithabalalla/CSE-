@@ -1,0 +1,137 @@
+INFO:     127.0.0.1:50074 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64563 - "OPTIONS /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64563 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64563 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64563 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:62451 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:50816 - "OPTIONS /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50816 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50816 - "OPTIONS /data/stocks/AAIC.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50816 - "GET /data/stocks/AAIC.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:61194 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:61018 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:64695 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64695 - "GET /data/dashboard/summary HTTP/1.1" 401 Unauthorized
+INFO:     127.0.0.1:64695 - "OPTIONS /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64695 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64695 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:64717 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64717 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:64719 - "OPTIONS /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64719 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64719 - "OPTIONS /data/stocks/ACME.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64719 - "GET /data/stocks/ACME.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64731 - "OPTIONS /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64731 - "GET /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63972 - "OPTIONS /data/stocks/AAIC.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63972 - "GET /data/stocks/AAIC.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63972 - "OPTIONS /data/stocks/EML.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63972 - "GET /data/stocks/EML.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63988 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63988 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:63989 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:63989 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:64678 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:57783 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:63460 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:49674 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:51870 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:56882 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:64236 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:62114 - "OPTIONS /data/stocks/CONN.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62114 - "GET /data/stocks/CONN.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62114 - "OPTIONS /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62114 - "GET /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62114 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53427 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:62127 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:56494 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:57700 - "OPTIONS /data/stocks/WIND.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57700 - "GET /data/stocks/WIND.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57700 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57700 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:57701 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57722 - "OPTIONS /analysis/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57722 - "POST /analysis/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57729 - "POST /analysis/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:57729 - "POST /analysis/run HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:62536 - "OPTIONS /analysis/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62536 - "POST /analysis/run HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62536 - "GET /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62536 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62536 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:62550 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62553 - "GET /data/stocks/ACME.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62553 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:52438 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58858 - "OPTIONS /watchlist/check/ACME.N0000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58858 - "GET /watchlist/check/ACME.N0000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54833 - "POST /auth/login HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54833 - "GET /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53980 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53980 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53981 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53981 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53992 - "OPTIONS /watchlist HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53993 - "OPTIONS /data/indices/aspi?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53992 - "GET /watchlist HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53993 - "GET /data/indices/aspi?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53992 - "OPTIONS /screener?sort_by=symbol&sort_dir=1&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53993 - "OPTIONS /screener/sectors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53993 - "GET /screener?sort_by=symbol&sort_dir=1&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53992 - "GET /screener/sectors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54005 - "OPTIONS /data/stocks/AAF.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54006 - "OPTIONS /watchlist/check/AAF.N0000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54006 - "GET /watchlist/check/AAF.N0000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54005 - "GET /data/stocks/AAF.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54026 - "OPTIONS /screener?sort_by=symbol&sort_dir=1&limit=200&sector=Finance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54026 - "GET /screener?sort_by=symbol&sort_dir=1&limit=200&sector=Finance HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54026 - "OPTIONS /data/stocks/HNBF?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54029 - "OPTIONS /watchlist/check/HNBF HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54029 - "GET /watchlist/check/HNBF HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54026 - "GET /data/stocks/HNBF?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54043 - "OPTIONS /screener?sort_by=symbol&sort_dir=1&limit=200&sector=Consumer+Goods HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54043 - "GET /screener?sort_by=symbol&sort_dir=1&limit=200&sector=Consumer+Goods HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54043 - "OPTIONS /screener?sort_by=symbol&sort_dir=1&limit=200&sector=Banking HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54043 - "GET /screener?sort_by=symbol&sort_dir=1&limit=200&sector=Banking HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62712 - "OPTIONS /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:62712 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "OPTIONS /news?days=7&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60514 - "OPTIONS /news/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60514 - "GET /news/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?days=7&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60514 - "OPTIONS /news/refresh?days_back=7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "POST /news/refresh?days_back=7 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?days=7&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "OPTIONS /news?days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "OPTIONS /news/refresh?days_back=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "POST /news/refresh?days_back=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "POST /news/refresh?days_back=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "OPTIONS /news?symbol=J&days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?symbol=J&days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "OPTIONS /news?symbol=JK&days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?symbol=JK&days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "OPTIONS /news?symbol=JKH&days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?symbol=JKH&days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "POST /news/refresh?days_back=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "OPTIONS /news?symbol=JKH&days=7&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?symbol=JKH&days=7&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /news?symbol=JKH&days=7&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "OPTIONS /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60513 - "GET /screener?sort_by=symbol&sort_dir=1&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60567 - "OPTIONS /screener?sort_by=symbol&sort_dir=1&limit=200&sector=Energy HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60567 - "GET /screener?sort_by=symbol&sort_dir=1&limit=200&sector=Energy HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60567 - "OPTIONS /data/stocks/LIOC?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60568 - "OPTIONS /watchlist/check/LIOC HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60568 - "GET /watchlist/check/LIOC HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60567 - "GET /data/stocks/LIOC?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60592 - "OPTIONS /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60592 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:64490 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51605 - "OPTIONS /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51605 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54989 - "GET /data/stocks/overview HTTP/1.1" 200 OK

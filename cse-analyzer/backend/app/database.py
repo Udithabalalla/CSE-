@@ -25,6 +25,10 @@ async def _create_indexes():
     await db.macro_indicators.create_index([("indicator", 1), ("date", 1)], unique=True)
     await db.predictions.create_index([("symbol", 1), ("created_at", -1)])
     await db.analysis_results.create_index([("user_id", 1), ("created_at", -1)])
+    await db.watchlist.create_index([("user_id", 1), ("symbol", 1)], unique=True)
+    await db.news.create_index([("published_at", -1)])
+    await db.news.create_index([("symbol", 1), ("published_at", -1)])
+    await db.news.create_index([("title", 1), ("published_at", 1), ("type", 1)], unique=True)
 
 
 def get_db():

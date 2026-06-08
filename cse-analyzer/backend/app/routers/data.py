@@ -1,3 +1,4 @@
+from typing import Optional
 from fastapi import APIRouter, UploadFile, File, Form, Depends, Query
 from app.services import data_service, stock_service
 from app.middleware.auth_middleware import get_current_user
@@ -27,6 +28,14 @@ async def dashboard_summary(current_user: dict = Depends(get_current_user)):
 @router.get("/stocks/overview")
 async def market_overview(current_user: dict = Depends(get_current_user)):
     return await stock_service.get_stocks_market_overview()
+
+
+@router.get("/indices/aspi")
+async def aspi_history(
+    days: int = Query(default=365, ge=30, le=1825),
+    current_user: dict = Depends(get_current_user),
+):
+    return await stock_service.get_aspi_history(days)
 
 
 @router.get("/stocks/{symbol}")

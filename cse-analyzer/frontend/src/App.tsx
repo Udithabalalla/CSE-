@@ -9,6 +9,9 @@ import AnalysisPage from "./pages/AnalysisPage";
 import PredictionsPage from "./pages/PredictionsPage";
 import MarketOverviewPage from "./pages/MarketOverviewPage";
 import StockDetailPage from "./pages/StockDetailPage";
+import WatchlistPage from "./pages/WatchlistPage";
+import ScreenerPage from "./pages/ScreenerPage";
+import NewsPage from "./pages/NewsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 5 * 60 * 1000, retry: 1 } },
@@ -21,7 +24,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ minHeight: "100vh", background: "#f8fafc" }}>
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
       <Navbar />
       <main>{children}</main>
     </div>
@@ -83,6 +86,9 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/watchlist" element={<ProtectedRoute><AppLayout><WatchlistPage /></AppLayout></ProtectedRoute>} />
+          <Route path="/screener"  element={<ProtectedRoute><AppLayout><ScreenerPage /></AppLayout></ProtectedRoute>} />
+          <Route path="/news"      element={<ProtectedRoute><AppLayout><NewsPage /></AppLayout></ProtectedRoute>} />
         </Routes>
       </BrowserRouter>
     </QueryClientProvider>

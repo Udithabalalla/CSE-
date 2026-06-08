@@ -6,15 +6,15 @@ import { generatePrediction, getPredictionStatus } from "../api/predictions";
 import type { ModelType, PredictionResult } from "../types";
 
 const MODELS: { value: ModelType; label: string; time: string }[] = [
-  { value: "arima", label: "ARIMA", time: "~5-10s" },
-  { value: "random_forest", label: "Random Forest", time: "~10-20s" },
-  { value: "lstm", label: "LSTM", time: "~30-60s" },
-  { value: "hybrid", label: "Hybrid (Recommended)", time: "~45-90s" },
+  { value: "arima",         label: "ARIMA",                  time: "~5-10s" },
+  { value: "random_forest", label: "Random Forest",          time: "~10-20s" },
+  { value: "lstm",          label: "LSTM",                   time: "~30-60s" },
+  { value: "hybrid",        label: "Hybrid (Recommended)",   time: "~45-90s" },
 ];
 
 export default function PredictionsPage() {
   const [symbol, setSymbol] = useState("");
-  const [model, setModel] = useState<ModelType>("hybrid");
+  const [model, setModel]   = useState<ModelType>("hybrid");
   const [forecastDays, setForecastDays] = useState(30);
   const [taskId, setTaskId] = useState<string | null>(null);
   const [result, setResult] = useState<PredictionResult | null>(null);
@@ -23,10 +23,7 @@ export default function PredictionsPage() {
 
   const generateMutation = useMutation({
     mutationFn: generatePrediction,
-    onSuccess: (data) => {
-      setTaskId(data.task_id);
-      setResult(null);
-    },
+    onSuccess: (data) => { setTaskId(data.task_id); setResult(null); },
   });
 
   useQuery({
@@ -54,54 +51,84 @@ export default function PredictionsPage() {
   const isPending = !!taskId || generateMutation.isPending;
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h1>Predictions</h1>
-      <div style={{ display: "flex", gap: "2rem", flexWrap: "wrap" }}>
-        <div style={{ minWidth: 280, maxWidth: 320 }}>
-          <div style={{ marginBottom: "1rem" }}>
-            <label style={{ fontWeight: 500, display: "block", marginBottom: 4 }}>Stock Symbol</label>
-            <select value={symbol} onChange={(e) => setSymbol(e.target.value)} style={inputStyle}>
-              <option value="">Select a stock...</option>
-              {stocks.map((s) => <option key={s.symbol} value={s.symbol}>{s.symbol}</option>)}
-            </select>
-          </div>
+    <div className="p-6 max-w-7xl mx-auto">
+      <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-5">Predictions</h1>
+      <div className="flex gap-6 flex-wrap lg:flex-nowrap">
 
-          <div style={{ marginBottom: "1rem" }}>
-            <label style={{ fontWeight: 500, display: "block", marginBottom: 4 }}>Model</label>
-            {MODELS.map((m) => (
-              <label key={m.value} style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6, fontSize: 13 }}>
-                <input type="radio" value={m.value} checked={model === m.value} onChange={() => setModel(m.value)} />
-                <span>{m.label}</span>
-                <span style={{ color: "#94a3b8", marginLeft: "auto" }}>{m.time}</span>
-              </label>
-            ))}
-          </div>
-
-          <div style={{ marginBottom: "1.5rem" }}>
-            <label style={{ fontWeight: 500, display: "block", marginBottom: 4 }}>
-              Forecast Period: <strong>{forecastDays} days</strong>
-            </label>
-            <input
-              type="range" min={1} max={90} value={forecastDays}
-              onChange={(e) => setForecastDays(Number(e.target.value))}
-              style={{ width: "100%" }}
-            />
-          </div>
-
-          <button onClick={handleGenerate} disabled={!symbol || isPending} style={{ ...btnStyle, width: "100%" }}>
-            {isPending ? "Generating..." : "Generate Forecast"}
-          </button>
-
-          {taskId && (
-            <div style={{ marginTop: "1rem", padding: "0.75rem", background: "#eff6ff", borderRadius: 6, fontSize: 13 }}>
-              Processing... polling every 3s
+        {/* Config panel */}
+        <div className="w-full lg:w-72 shrink-0">
+          <div className="card p-5 space-y-5">
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">Stock Symbol</label>
+              <select className="input" value={symbol} onChange={(e) => setSymbol(e.target.value)}>
+                <option value="">Select a stock...</option>
+                {stocks.map((s) => <option key={s.symbol} value={s.symbol}>{s.symbol}</option>)}
+              </select>
             </div>
-          )}
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-2">Model</label>
+              <div className="space-y-2">
+                {MODELS.map((m) => (
+                  <label key={m.value} className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer transition-colors ${
+                    model === m.value
+                      ? "border-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                      : "border-slate-200 dark:border-slate-600 hover:border-slate-300"
+                  }`}>
+                    <input
+                      type="radio" value={m.value}
+                      checked={model === m.value}
+                      onChange={() => setModel(m.value)}
+                      className="accent-blue-600"
+                    />
+                    <span className="text-sm text-slate-700 dark:text-slate-300 flex-1">{m.label}</span>
+                    <span className="text-xs text-slate-400">{m.time}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200 mb-1.5">
+                Forecast: <span className="text-blue-600 dark:text-blue-400">{forecastDays} days</span>
+              </label>
+              <input
+                type="range" min={1} max={90} value={forecastDays}
+                onChange={(e) => setForecastDays(Number(e.target.value))}
+                className="w-full accent-blue-600"
+              />
+              <div className="flex justify-between text-xs text-slate-400 mt-0.5">
+                <span>1d</span><span>30d</span><span>90d</span>
+              </div>
+            </div>
+
+            <button onClick={handleGenerate} disabled={!symbol || isPending} className="btn-primary w-full py-2.5">
+              {isPending ? "Generating..." : "Generate Forecast"}
+            </button>
+
+            {taskId && (
+              <div className="px-3 py-2.5 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300 text-sm">
+                Processing — polling every 3s...
+              </div>
+            )}
+          </div>
         </div>
 
-        <div style={{ flex: 1, minWidth: 300 }}>
-          {generateMutation.isError && <p style={{ color: "red" }}>Failed to start prediction</p>}
-          {result && <PredictionResults result={result} />}
+        {/* Results */}
+        <div className="flex-1 min-w-0">
+          {generateMutation.isError && (
+            <div className="card p-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm">
+              Failed to start prediction. Please try again.
+            </div>
+          )}
+          {result
+            ? <PredictionResults result={result} />
+            : !isPending && (
+              <div className="card p-8 text-center text-slate-400 dark:text-slate-500">
+                Select a stock and model, then click Generate Forecast
+              </div>
+            )
+          }
         </div>
       </div>
     </div>
@@ -117,25 +144,38 @@ function PredictionResults({ result }: { result: PredictionResult }) {
     lower: result.lower_bound?.[i],
   }));
 
-  const recColor = insights?.recommendation === "buy" ? "green" : insights?.recommendation === "sell" ? "red" : "#64748b";
+  const recColor =
+    insights?.recommendation === "buy"  ? "text-emerald-600 dark:text-emerald-400" :
+    insights?.recommendation === "sell" ? "text-red-500" : "text-slate-500";
   const trendIcon = insights?.trend === "uptrend" ? "▲" : "▼";
 
   return (
-    <div>
-      <h3>{result.symbol} — {result.model_used.toUpperCase()} Forecast</h3>
+    <div className="card p-5 space-y-5">
+      <div>
+        <h3 className="font-bold text-slate-900 dark:text-white">
+          {result.symbol} — {result.model_used.toUpperCase()} Forecast
+        </h3>
+      </div>
 
       {insights && (
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
-          <Chip label="Trend" value={`${trendIcon} ${insights.trend}`} />
-          <Chip label="Recommendation" value={insights.recommendation.toUpperCase()} color={recColor} />
-          <Chip label="Risk Level" value={insights.risk_level} />
-          <Chip label="Price Change" value={`${insights.price_change_pct > 0 ? "+" : ""}${insights.price_change_pct}%`} />
+        <div className="flex flex-wrap gap-3">
+          {[
+            { label: "Trend",         value: `${trendIcon} ${insights.trend}` },
+            { label: "Recommendation",value: insights.recommendation.toUpperCase(), cls: recColor },
+            { label: "Risk Level",    value: insights.risk_level },
+            { label: "Price Change",  value: `${insights.price_change_pct > 0 ? "+" : ""}${insights.price_change_pct}%` },
+          ].map((c) => (
+            <div key={c.label} className="px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-sm">
+              <span className="text-slate-400 mr-1">{c.label}:</span>
+              <span className={`font-semibold ${c.cls ?? "text-slate-900 dark:text-white"}`}>{c.value}</span>
+            </div>
+          ))}
         </div>
       )}
 
-      <ResponsiveContainer width="100%" height={320}>
+      <ResponsiveContainer width="100%" height={300}>
         <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" />
+          <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
           <XAxis dataKey="date" tick={{ fontSize: 11 }} tickCount={6} />
           <YAxis />
           <Tooltip />
@@ -150,27 +190,17 @@ function PredictionResults({ result }: { result: PredictionResult }) {
         </LineChart>
       </ResponsiveContainer>
 
-      <h4 style={{ marginTop: "1.5rem" }}>Accuracy Metrics</h4>
-      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-        {Object.entries(result.accuracy_metrics).map(([k, v]) => (
-          <div key={k} style={{ padding: "0.6rem 1rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 6 }}>
-            <div style={{ fontSize: 12, color: "#64748b" }}>{k.toUpperCase()}</div>
-            <div style={{ fontWeight: 700 }}>{v}</div>
-          </div>
-        ))}
+      <div>
+        <h4 className="font-semibold text-sm text-slate-700 dark:text-slate-200 mb-2">Accuracy Metrics</h4>
+        <div className="flex flex-wrap gap-3">
+          {Object.entries(result.accuracy_metrics).map(([k, v]) => (
+            <div key={k} className="stat-card px-4 py-2">
+              <div className="text-xs text-slate-400">{k.toUpperCase()}</div>
+              <div className="font-bold text-slate-900 dark:text-white">{v}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
 }
-
-function Chip({ label, value, color = "#1e293b" }: { label: string; value: string; color?: string }) {
-  return (
-    <div style={{ padding: "0.5rem 1rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 20 }}>
-      <span style={{ fontSize: 11, color: "#94a3b8" }}>{label}: </span>
-      <span style={{ fontWeight: 600, color }}>{value}</span>
-    </div>
-  );
-}
-
-const inputStyle: React.CSSProperties = { padding: "0.5rem", border: "1px solid #cbd5e1", borderRadius: 4, fontSize: 14, width: "100%" };
-const btnStyle: React.CSSProperties = { padding: "0.6rem 1.5rem", background: "#2563eb", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: 600 };

@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getStockDetail } from "../api/data";
+import { checkWatching, addToWatchlist, removeFromWatchlist } from "../api/watchlist";
 import CandlestickChart from "../components/charts/CandlestickChart";
 import type { OHLCVRow } from "../types";
 
-const PERIOD_OPTIONS = [
+const PERIODS = [
   { label: "1M",  days: 30 },
   { label: "3M",  days: 90 },
   { label: "6M",  days: 180 },
@@ -13,16 +14,14 @@ const PERIOD_OPTIONS = [
   { label: "2Y",  days: 730 },
 ];
 
-const OVERLAY_OPTIONS = ["SMA 20", "SMA 50", "EMA 12", "EMA 26", "Bollinger"];
+const OVERLAYS = ["SMA 20", "SMA 50", "EMA 12", "EMA 26", "Bollinger"];
 const OVERLAY_COLORS: Record<string, string> = {
-  "SMA 20": "#f59e0b",
-  "SMA 50": "#8b5cf6",
-  "EMA 12": "#06b6d4",
-  "EMA 26": "#ec4899",
-  "Bollinger": "#64748b",
+  "SMA 20":   "#f59e0b",
+  "SMA 50":   "#8b5cf6",
+  "EMA 12":   "#06b6d4",
+  "EMA 26":   "#ec4899",
+  "Bollinger":"#64748b",
 };
-
-// ── Technical indicator helpers ────────────────────────────────────────────
 
 function sma(closes: number[], period: number): (number | null)[] {
   return closes.map((_, i) =>
@@ -32,62 +31,60 @@ function sma(closes: number[], period: number): (number | null)[] {
 
 function ema(closes: number[], period: number): number[] {
   const k = 2 / (period + 1);
-  const result: number[] = [];
-  closes.forEach((v, i) => {
-    result.push(i === 0 ? v : v * k + result[i - 1] * (1 - k));
-  });
-  return result;
+  return closes.reduce<number[]>((acc, v, i) => {
+    acc.push(i === 0 ? v : v * k + acc[i - 1] * (1 - k));
+    return acc;
+  }, []);
 }
 
 function buildOverlays(data: OHLCVRow[], active: string[]) {
   const closes = data.map((r) => r.close);
   const dates  = data.map((r) => r.date);
-  const overlays = [];
+  const result = [];
 
   if (active.includes("SMA 20")) {
     const vals = sma(closes, 20);
-    overlays.push({ label: "SMA 20", color: OVERLAY_COLORS["SMA 20"],
-      values: dates.map((t, i) => ({ time: t, value: vals[i]! })).filter((v) => v.value != null) });
+    result.push({ label: "SMA 20", color: OVERLAY_COLORS["SMA 20"],
+      values: dates.flatMap((t, i) => vals[i] != null ? [{ time: t, value: vals[i]! }] : []) });
   }
   if (active.includes("SMA 50")) {
     const vals = sma(closes, 50);
-    overlays.push({ label: "SMA 50", color: OVERLAY_COLORS["SMA 50"],
-      values: dates.map((t, i) => ({ time: t, value: vals[i]! })).filter((v) => v.value != null) });
+    result.push({ label: "SMA 50", color: OVERLAY_COLORS["SMA 50"],
+      values: dates.flatMap((t, i) => vals[i] != null ? [{ time: t, value: vals[i]! }] : []) });
   }
   if (active.includes("EMA 12")) {
     const vals = ema(closes, 12);
-    overlays.push({ label: "EMA 12", color: OVERLAY_COLORS["EMA 12"],
+    result.push({ label: "EMA 12", color: OVERLAY_COLORS["EMA 12"],
       values: dates.map((t, i) => ({ time: t, value: vals[i] })) });
   }
   if (active.includes("EMA 26")) {
     const vals = ema(closes, 26);
-    overlays.push({ label: "EMA 26", color: OVERLAY_COLORS["EMA 26"],
+    result.push({ label: "EMA 26", color: OVERLAY_COLORS["EMA 26"],
       values: dates.map((t, i) => ({ time: t, value: vals[i] })) });
   }
   if (active.includes("Bollinger")) {
     const mid = sma(closes, 20);
-    const stdVals = closes.map((_, i) => {
+    const std = closes.map((_, i) => {
       if (i < 19) return null;
-      const slice = closes.slice(i - 19, i + 1);
-      const mean = slice.reduce((a, b) => a + b, 0) / 20;
-      const std = Math.sqrt(slice.map((v) => (v - mean) ** 2).reduce((a, b) => a + b, 0) / 20);
-      return std;
+      const sl = closes.slice(i - 19, i + 1);
+      const m  = sl.reduce((a, b) => a + b, 0) / 20;
+      return Math.sqrt(sl.map((v) => (v - m) ** 2).reduce((a, b) => a + b, 0) / 20);
     });
-    overlays.push({ label: "BB Upper", color: "#64748b",
-      values: dates.map((t, i) => ({ time: t, value: mid[i]! + 2 * stdVals[i]! })).filter((v) => !isNaN(v.value)) });
-    overlays.push({ label: "BB Lower", color: "#64748b",
-      values: dates.map((t, i) => ({ time: t, value: mid[i]! - 2 * stdVals[i]! })).filter((v) => !isNaN(v.value)) });
+    result.push({ label: "BB Upper", color: "#64748b",
+      values: dates.flatMap((t, i) => mid[i] != null && std[i] != null ? [{ time: t, value: mid[i]! + 2 * std[i]! }] : []) });
+    result.push({ label: "BB Lower", color: "#64748b",
+      values: dates.flatMap((t, i) => mid[i] != null && std[i] != null ? [{ time: t, value: mid[i]! - 2 * std[i]! }] : []) });
   }
-  return overlays;
+  return result;
 }
-
-// ── Main component ─────────────────────────────────────────────────────────
 
 export default function StockDetailPage() {
   const { symbol } = useParams<{ symbol: string }>();
-  const navigate = useNavigate();
-  const [days, setDays] = useState(365);
-  const [activeOverlays, setActiveOverlays] = useState<string[]>(["SMA 20"]);
+  const navigate   = useNavigate();
+  const [days, setDays]             = useState(365);
+  const [activeOverlays, setActive] = useState<string[]>(["SMA 20"]);
+
+  const qc = useQueryClient();
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ["stock-detail", symbol, days],
@@ -95,89 +92,125 @@ export default function StockDetailPage() {
     enabled: !!symbol,
   });
 
+  const { data: watchData } = useQuery({
+    queryKey: ["watching", symbol],
+    queryFn: () => checkWatching(symbol!),
+    enabled: !!symbol,
+  });
+  const watching = watchData?.watching ?? false;
+
+  const watchMut = useMutation({
+    mutationFn: () => watching ? removeFromWatchlist(symbol!) : addToWatchlist(symbol!),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["watching", symbol] });
+      qc.invalidateQueries({ queryKey: ["watchlist"] });
+    },
+  });
+
   const overlays = useMemo(
     () => (data ? buildOverlays(data.ohlcv, activeOverlays) : []),
     [data, activeOverlays]
   );
 
-  const toggleOverlay = (name: string) =>
-    setActiveOverlays((prev) =>
-      prev.includes(name) ? prev.filter((o) => o !== name) : [...prev, name]
-    );
+  const toggle = (name: string) =>
+    setActive((p) => p.includes(name) ? p.filter((o) => o !== name) : [...p, name]);
 
-  if (isLoading) return <div style={center}>Loading {symbol}...</div>;
-  if (isError || !data) return <div style={center}>Failed to load data for {symbol}.</div>;
+  if (isLoading) return (
+    <div className="flex items-center justify-center h-64 text-slate-500 dark:text-slate-400">
+      Loading {symbol}...
+    </div>
+  );
+  if (isError || !data) return (
+    <div className="flex items-center justify-center h-64 text-slate-500 dark:text-slate-400">
+      Failed to load data for {symbol}.
+    </div>
+  );
 
   const { stats } = data;
   const isUp = (stats.pct_change ?? 0) >= 0;
 
   return (
-    <div style={{ padding: "1.5rem 2rem", maxWidth: 1400, margin: "0 auto" }}>
+    <div className="p-6 max-w-7xl mx-auto space-y-5">
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem", marginBottom: "1.5rem" }}>
-        <button onClick={() => navigate(-1)} style={backBtn}>← Back</button>
-        <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "1rem", flexWrap: "wrap" }}>
-            <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800 }}>{data.symbol}</h1>
-            {data.name && <span style={{ color: "#64748b", fontSize: 15 }}>{data.name}</span>}
-            {data.sector && <span style={sectorBadge}>{data.sector}</span>}
+      <div className="flex flex-wrap items-start gap-4">
+        <button onClick={() => navigate(-1)} className="btn-secondary mt-1">← Back</button>
+        <div className="flex-1 min-w-0">
+          <div className="flex flex-wrap items-baseline gap-3">
+            <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">{data.symbol}</h1>
+            {data.name   && <span className="text-slate-500 dark:text-slate-400 text-base">{data.name}</span>}
+            {data.sector && <span className="badge bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">{data.sector}</span>}
           </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", marginTop: 6 }}>
-            <span style={{ fontSize: 32, fontWeight: 700 }}>
+          <div className="flex items-baseline gap-3 mt-1">
+            <span className="text-3xl font-bold text-slate-900 dark:text-white">
               Rs. {stats.current_price?.toFixed(2) ?? "—"}
             </span>
-            <span style={{ fontSize: 16, fontWeight: 600, color: isUp ? "#22c55e" : "#ef4444" }}>
+            <span className={`text-base font-semibold ${isUp ? "text-emerald-500" : "text-red-500"}`}>
               {isUp ? "▲" : "▼"} {Math.abs(stats.pct_change ?? 0).toFixed(2)}%
             </span>
           </div>
         </div>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <button onClick={() => navigate(`/analysis?symbol=${data.symbol}`)} style={actionBtn("#2563eb")}>
+        <div className="flex gap-2 mt-1 flex-wrap">
+          <button onClick={() => watchMut.mutate()} disabled={watchMut.isPending}
+            className={`px-4 py-2 rounded-lg text-sm font-semibold border-2 transition-colors ${
+              watching
+                ? "border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400"
+                : "border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-yellow-400 hover:text-yellow-600"
+            }`}>
+            {watching ? "★ Watching" : "☆ Watch"}
+          </button>
+          <button onClick={() => navigate(`/analysis?symbol=${data.symbol}`)} className="btn-primary">
             Run Analysis
           </button>
-          <button onClick={() => navigate(`/predictions?symbol=${data.symbol}`)} style={actionBtn("#7c3aed")}>
+          <button onClick={() => navigate(`/predictions?symbol=${data.symbol}`)}
+            className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
             Predict
           </button>
         </div>
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
-        <StatCard label="Prev Close"   value={`Rs. ${stats.prev_close?.toFixed(2) ?? "—"}`} />
-        <StatCard label="52W High"     value={`Rs. ${stats.high_52w.toFixed(2)}`} />
-        <StatCard label="52W Low"      value={`Rs. ${stats.low_52w.toFixed(2)}`} />
-        <StatCard label="Volume"       value={stats.volume != null ? Number(stats.volume).toLocaleString() : "—"} />
-        <StatCard label="Turnover"     value={stats.turnover != null ? `Rs. ${(stats.turnover / 1e6).toFixed(2)}M` : "—"} />
-        <StatCard label="Market Cap"   value={stats.market_cap != null ? `Rs. ${(stats.market_cap / 1e9).toFixed(2)}B` : "—"} />
-        <StatCard label="Period Return" value={`${stats.total_return_pct >= 0 ? "+" : ""}${stats.total_return_pct.toFixed(2)}%`}
-          color={stats.total_return_pct >= 0 ? "#22c55e" : "#ef4444"} />
+      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+        {[
+          { label: "Prev Close",     value: `Rs. ${stats.prev_close?.toFixed(2) ?? "—"}` },
+          { label: "52W High",       value: `Rs. ${stats.high_52w.toFixed(2)}` },
+          { label: "52W Low",        value: `Rs. ${stats.low_52w.toFixed(2)}` },
+          { label: "Volume",         value: stats.volume != null ? Number(stats.volume).toLocaleString() : "—" },
+          { label: "Turnover",       value: stats.turnover != null ? `Rs. ${(stats.turnover / 1e6).toFixed(2)}M` : "—" },
+          { label: "Market Cap",     value: stats.market_cap != null ? `Rs. ${(stats.market_cap / 1e9).toFixed(2)}B` : "—" },
+          { label: "Period Return",  value: `${stats.total_return_pct >= 0 ? "+" : ""}${stats.total_return_pct.toFixed(2)}%`,
+            color: stats.total_return_pct >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-red-500" },
+        ].map((s) => (
+          <div key={s.label} className="stat-card">
+            <div className="text-xs text-slate-400">{s.label}</div>
+            <div className={`font-bold text-sm ${s.color ?? "text-slate-900 dark:text-white"}`}>{s.value}</div>
+          </div>
+        ))}
       </div>
 
       {/* Chart controls */}
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.75rem", flexWrap: "wrap" }}>
-        {/* Period selector */}
-        <div style={{ display: "flex", gap: "0.25rem" }}>
-          {PERIOD_OPTIONS.map((p) => (
-            <button key={p.days} onClick={() => setDays(p.days)} style={periodBtn(days === p.days)}>
+      <div className="flex flex-wrap items-center gap-3">
+        <div className="flex gap-1">
+          {PERIODS.map((p) => (
+            <button key={p.days} onClick={() => setDays(p.days)}
+              className={`px-3 py-1 text-xs rounded-md font-medium transition-colors ${
+                days === p.days
+                  ? "bg-blue-600 text-white"
+                  : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+              }`}>
               {p.label}
             </button>
           ))}
         </div>
-        {/* Overlay toggles */}
-        <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap" }}>
-          {OVERLAY_OPTIONS.map((name) => (
-            <button
-              key={name}
-              onClick={() => toggleOverlay(name)}
+        <div className="flex gap-1.5 flex-wrap">
+          {OVERLAYS.map((name) => (
+            <button key={name} onClick={() => toggle(name)}
+              className="px-2.5 py-1 text-xs rounded-md font-medium border transition-colors"
               style={{
-                padding: "0.25rem 0.6rem", fontSize: 12, borderRadius: 4, cursor: "pointer",
-                border: `1px solid ${OVERLAY_COLORS[name] || "#475569"}`,
+                borderColor: OVERLAY_COLORS[name],
                 background: activeOverlays.includes(name) ? OVERLAY_COLORS[name] : "transparent",
-                color: activeOverlays.includes(name) ? "#fff" : OVERLAY_COLORS[name] || "#94a3b8",
-                fontWeight: 500,
-              }}
-            >
+                color: activeOverlays.includes(name) ? "#fff" : OVERLAY_COLORS[name],
+              }}>
               {name}
             </button>
           ))}
@@ -185,36 +218,41 @@ export default function StockDetailPage() {
       </div>
 
       {/* Candlestick chart */}
-      <div style={{ background: "#0f172a", borderRadius: 8, padding: "1rem", marginBottom: "1.5rem" }}>
+      <div className="rounded-xl overflow-hidden bg-slate-900">
         <CandlestickChart data={data.ohlcv} overlays={overlays} height={420} />
       </div>
 
-      {/* OHLCV table - recent 20 rows */}
-      <div>
-        <h3 style={{ marginBottom: "0.75rem", fontSize: 15, color: "#475569" }}>Recent Trading Data</h3>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+      {/* Recent OHLCV table */}
+      <div className="card overflow-hidden">
+        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-700">
+          <h3 className="font-semibold text-slate-700 dark:text-slate-200">Recent Trading Data</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
             <thead>
               <tr>
                 {["Date", "Open", "High", "Low", "Close", "Volume", "Change %"].map((h) => (
-                  <th key={h} style={th}>{h}</th>
+                  <th key={h} className="th">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {[...data.ohlcv].reverse().slice(0, 20).map((row) => (
-                <tr key={row.date} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                  <td style={td}>{row.date}</td>
-                  <td style={td}>{row.open.toFixed(2)}</td>
-                  <td style={td}>{row.high.toFixed(2)}</td>
-                  <td style={td}>{row.low.toFixed(2)}</td>
-                  <td style={{ ...td, fontWeight: 600 }}>{row.close.toFixed(2)}</td>
-                  <td style={td}>{Number(row.volume).toLocaleString()}</td>
-                  <td style={{ ...td, color: (row.pct_change ?? 0) >= 0 ? "#22c55e" : "#ef4444" }}>
-                    {row.pct_change != null ? `${row.pct_change >= 0 ? "+" : ""}${row.pct_change.toFixed(2)}%` : "—"}
-                  </td>
-                </tr>
-              ))}
+              {[...data.ohlcv].reverse().slice(0, 20).map((row) => {
+                const up = (row.pct_change ?? 0) >= 0;
+                return (
+                  <tr key={row.date} className="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                    <td className="td font-medium">{row.date}</td>
+                    <td className="td">{row.open.toFixed(2)}</td>
+                    <td className="td">{row.high.toFixed(2)}</td>
+                    <td className="td">{row.low.toFixed(2)}</td>
+                    <td className="td font-semibold">{row.close.toFixed(2)}</td>
+                    <td className="td text-slate-500">{Number(row.volume).toLocaleString()}</td>
+                    <td className={`td font-medium ${up ? "text-emerald-600 dark:text-emerald-400" : "text-red-500"}`}>
+                      {row.pct_change != null ? `${row.pct_change >= 0 ? "+" : ""}${row.pct_change.toFixed(2)}%` : "—"}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -222,20 +260,3 @@ export default function StockDetailPage() {
     </div>
   );
 }
-
-function StatCard({ label, value, color }: { label: string; value: string; color?: string }) {
-  return (
-    <div style={{ padding: "0.6rem 1rem", background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, minWidth: 130 }}>
-      <div style={{ fontSize: 11, color: "#94a3b8", marginBottom: 2 }}>{label}</div>
-      <div style={{ fontWeight: 700, fontSize: 16, color: color ?? "#1e293b" }}>{value}</div>
-    </div>
-  );
-}
-
-const center: React.CSSProperties = { display: "flex", justifyContent: "center", alignItems: "center", padding: "6rem", fontSize: 16, color: "#64748b" };
-const sectorBadge: React.CSSProperties = { background: "#eff6ff", color: "#2563eb", padding: "2px 10px", borderRadius: 12, fontSize: 12, fontWeight: 600 };
-const backBtn: React.CSSProperties = { padding: "0.4rem 0.75rem", background: "#f1f5f9", border: "1px solid #e2e8f0", borderRadius: 4, cursor: "pointer", fontSize: 13, color: "#475569" };
-const actionBtn = (bg: string): React.CSSProperties => ({ padding: "0.5rem 1rem", background: bg, color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600, fontSize: 13 });
-const periodBtn = (active: boolean): React.CSSProperties => ({ padding: "0.3rem 0.6rem", fontSize: 12, borderRadius: 4, cursor: "pointer", border: "1px solid #e2e8f0", background: active ? "#2563eb" : "#f8fafc", color: active ? "#fff" : "#64748b", fontWeight: active ? 600 : 400 });
-const th: React.CSSProperties = { padding: "8px 10px", borderBottom: "2px solid #e2e8f0", textAlign: "left", background: "#f8fafc", fontSize: 12, color: "#64748b", fontWeight: 600 };
-const td: React.CSSProperties = { padding: "7px 10px", fontSize: 13, color: "#1e293b" };

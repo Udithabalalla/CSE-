@@ -135,3 +135,38 @@ INFO:     127.0.0.1:64490 - "GET /data/stocks/overview HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51605 - "OPTIONS /data/stocks/overview HTTP/1.1" 200 OK
 INFO:     127.0.0.1:51605 - "GET /data/stocks/overview HTTP/1.1" 200 OK
 INFO:     127.0.0.1:54989 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "OPTIONS /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "GET /data/stocks HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "OPTIONS /screener/sectors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "OPTIONS /screener?sort_by=symbol&sort_dir=1&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "GET /screener/sectors HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "GET /screener?sort_by=symbol&sort_dir=1&limit=200 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "OPTIONS /watchlist HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53254 - "OPTIONS /data/indices/aspi?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55598 - "GET /watchlist HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53254 - "GET /data/indices/aspi?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53254 - "OPTIONS /data/dashboard/summary HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53254 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:55598 - "GET /data/stocks/overview HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59660 - "OPTIONS /data/stocks/AAF.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60965 - "OPTIONS /watchlist/check/AAF.N0000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59660 - "GET /watchlist/check/AAF.N0000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60965 - "GET /data/stocks/AAF.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60965 - "OPTIONS /data/stocks/AGAL.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59660 - "OPTIONS /watchlist/check/AGAL.N0000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59660 - "GET /watchlist/check/AGAL.N0000 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:60965 - "GET /data/stocks/AGAL.N0000?days=365 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58219 - "OPTIONS /news?days=7&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58219 - "OPTIONS /news/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58219 - "GET /news?days=7&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58219 - "GET /news/categories HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59958 - "OPTIONS /news?days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59958 - "GET /news?days=1&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59958 - "OPTIONS /news?days=90&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59958 - "GET /news?days=90&limit=100 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59958 - "OPTIONS /news/refresh?days_back=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54698 - "POST /news/refresh?days_back=1 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59919 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:60731 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:53196 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error
+INFO:     127.0.0.1:62652 - "GET /data/dashboard/summary HTTP/1.1" 500 Internal Server Error

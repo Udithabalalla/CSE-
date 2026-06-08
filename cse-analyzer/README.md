@@ -2,40 +2,38 @@ Prerequisites
 Docker Desktop (for MongoDB + Redis)
 Python 3.11+ (a venv already exists at cse-analyzer/backend/.venv)
 Node.js 18+ (for the frontend)
+
 1. Start infrastructure (MongoDB + Redis)
 From the project root:
-
 cd d:\CSE\cse-analyzer
 docker compose up -d
-This starts:
 
+This starts:
 MongoDB on localhost:27017
 Redis on localhost:6379
+
 2. Configure the backend
 Copy the example env file if you don’t already have .env:
-
 cd d:\CSE\cse-analyzer\backend
 copy .env.example .env
 Edit .env if needed. Defaults are fine for local dev:
-
 MONGO_URI=mongodb://localhost:27017
 MONGO_DB=cse_analyzer
 REDIS_URL=redis://localhost:6379/0
+
 3. Start the backend API
 Activate the virtual environment and run uvicorn:
-
 cd d:\CSE\cse-analyzer\backend
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt   # only if deps aren't installed yet
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 API will be at:
-
 http://localhost:8000
 http://localhost:8000/docs (Swagger UI)
 http://localhost:8000/health (health check)
+
 4. Seed sample data (optional but recommended)
 In a second terminal (with the venv active):
-
 cd d:\CSE\cse-analyzer\backend
 .\.venv\Scripts\Activate.ps1
 python seed_data.py
@@ -43,7 +41,6 @@ This loads 2 years of synthetic OHLCV data for 8 CSE stocks into MongoDB.
 
 5. Start the frontend
 In another terminal:
-
 cd d:\CSE\cse-analyzer\frontend
 npm install    # only first time
 npm run dev
